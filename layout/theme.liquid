@@ -202,12 +202,13 @@
                 });
             });
         </script> -->
-      {{ 'wnw-optimization.js' | asset_url | script_tag }}
+      
       <div class="page-loader"><img src="https://cdn.shopify.com/s/files/1/0094/6326/7379/files/page-loader-3.gif?v=1680067148"></div>
       <script>
         $(window).load(function() {
           $(".page-loader").fadeOut("slow");
         });
       </script>
+      {{ 'wnw-optimization.js' | asset_url | script_tag }}
     </body>
 </html>
