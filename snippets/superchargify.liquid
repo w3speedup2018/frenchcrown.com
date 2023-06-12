@@ -1,0 +1,79 @@
+{%- comment -%}Superchargify v2.0.4694a02c | (c) Superchargify (https://www.superchargify.com){%- endcomment -%}
+<!-- Superchargify v2.0.4694a02c (https://www.superchargify.com) -->
+{%- assign sc_config = shop.metafields.superchargify.config -%}
+{%- assign sc_features = sc_config.features -%}
+{%- assign sc_settings = sc_config.settings -%}
+{%- if sc_settings.status.amp -%}
+{%- unless canonical_url contains "?" -%}
+  {%- if template.name == 'product' and product -%}
+    {%- assign sc_item = product -%}
+  {%- elsif template.name == 'collection' and collection and sc_features.collections -%}
+    {%- unless current_tags or collection.handle == "vendors" or collection.handle == "types" -%}
+      {%- assign sc_item = collection -%}
+    {%- endunless -%}
+  {%- elsif template.name == 'article' and article and sc_features.articles -%}
+    {%- assign sc_item = article -%}
+  {%- endif -%}
+  {%- unless sc_item == blank or sc_item.metafields.seo.hidden == 1 -%}
+    <link rel="amphtml" href="https://{{shop.domain}}/a/sc/amp{{sc_item.url}}">
+  {%- endunless -%}
+{%- endunless -%}
+{%- endif -%}
+
+{%- if sc_settings.status.pwa -%}
+  {%- unless sc_settings.webApp.appName == blank -%}
+    <meta name="apple-mobile-web-app-title" content="{{sc_settings.webApp.appName}}">
+  {%- endunless -%}
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  {%- unless sc_settings.webApp.appIcon == blank -%}
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    {%- for sc_icon in sc_config.auto.icons -%}
+      <link rel="apple-touch-icon" sizes="{{sc_icon.size}}" href="{{sc_icon.url}}">
+    {%- endfor -%}
+    {%- if sc_features.iossplashscreen -%}
+      {%- for sc_splashscreen in sc_config.auto.splashScreens -%}
+        <link rel="apple-touch-startup-image" href="{{sc_splashscreen.url}}" media="{{sc_splashscreen.media}}">
+      {%- endfor -%}
+    {%- endif -%}
+    <link rel="apple-touch-icon" href="{{sc_settings.webApp.appIcon}}">
+  {%- endunless -%}
+  {%- unless sc_settings.webApp.themeColor == blank -%}
+    <meta name="theme-color" content="{{ sc_settings.webApp.themeColor }}">
+  {%- endunless -%}
+ {%comment%} <link rel="manifest" href="/a/sc/manifest.json?v={{ sc_config.auto.version | default: 0}}">{%endcomment%}
+{%- endif -%}
+
+{%- assign sc_suggestions = sc_features.preloadsuggestions -%}
+{%- assign sc_numpreloads = sc_settings.webApp.preload | plus: 0 -%}
+{%- if sc_suggestions and sc_numpreloads > 0 -%}
+{%- assign number_of_products = 10 -%}
+{%- assign number_of_products_to_fetch = number_of_products | plus: 1 -%}
+{%- if collection == null or collection.handle == 'frontpage' or collection.handle == 'all' -%}
+  {%- assign found_a_collection = false -%}
+  {%- for c in product.collections -%}
+    {%- if found_a_collection == false and c.handle != 'frontpage' and c.handle != 'all' and c.all_products_count > 1 -%}
+      {%- assign found_a_collection = true -%}
+      {%- assign sc_preload_collection = c -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+{%- assign sc_preload_list = "" -%}
+{%- if sc_preload_collection and sc_preload_collection.products_count > 0 -%}
+  {%- assign current_product = product -%}
+  {%- assign current_product_found = false -%}
+  {%- paginate sc_preload_collection.products by number_of_products_to_fetch -%}
+    {%- for product in sc_preload_collection.products -%}
+      {%- if product.handle == current_product.handle -%}
+        {%- assign current_product_found = true -%}
+      {%- else -%}
+        {%- unless current_product_found == false and forloop.last -%}
+          {%- assign sc_preload_list = sc_preload_list | append: " " | append: product.url -%}
+        {%- endunless -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endpaginate -%}
+{%- endif -%}
+{%- endif -%}
+
+<script>!function(r,e,t){var a=r.performance&&r.performance.mark;a&&r.performance.mark("superchargify.snippet.start");var n=r.location.pathname.endsWith("/sw.html");function c(e){e=e.replace(/[[]]/g,"\\$&");var t=new RegExp("[?&]"+e+"(=([^&#]*)|&|#|$)").exec(r.location.href);return t?t[2]?decodeURIComponent(t[2].replace(/\+/g," ")):"":null}var i=!1;if(n)i="true"===c("amp");else try{i=!0===(i=JSON.parse("{{ sc_config.settings.status.amp }}"))}catch(e){}if(!i||"/cart"!==r.location.pathname||!e.referrer.includes("ampproject.org")&&!e.referrer.includes("a/sc/amp")||e.location.search.includes("utm")){if(t.serviceWorker){var o=!1;if(n)o="true"===c("pwa");else try{o=!0===(o=JSON.parse("{{ sc_config.settings.status.pwa }}"))}catch(e){}if(o){if(!function(){try{return r.self!==r.top}catch(e){return!0}}()||n){var s=!1;if(n){var u=c("itemUrl");u&&(s=[u])}else{var p=!1;try{p=!0===(p=JSON.parse("{{ sc_config.features.preloadsuggestions }}"))}catch(e){}if(p){var l="{{ sc_preload_list }}".split(" ");0!==l.length&&(s=(s=function(e){for(var t,r,a=e.length;0!==a;)r=Math.floor(Math.random()*a),t=e[a-=1],e[a]=e[r],e[r]=t;return e}(l)).slice(0,parseInt("{{ sc_numpreloads }}")))}}r.addEventListener("load",function(){t.serviceWorker.register("/a/sc/sw.js",{scope:"/",updateViaCache:"none"}).then(function(e){s&&0<s.length&&function(t,e){r.requestIdleCallback?r.requestIdleCallback(function(e){(0<e.timeRemaining()||e.didTimeout)&&t()},{timeout:e}):setTimeout(t,e)}(h,2500)})}),r.addEventListener("beforeinstallprompt",function(e){try{ga("send","event","Superchargify","pwa_prompt","Superchargify: PWA Prompt")}catch(e){}e.userChoice.then(function(e){var t="accepted"===e.outcome?"Superchargify: PWA Installed":"Superchargify: PWA Cancelled";try{ga("send","event","Superchargify","pwa_prompt",t)}catch(e){}})}),a&&r.performance.mark("superchargify.snippet.end")}}else t.serviceWorker.getRegistrations().then(function(e){e.forEach(function(e){(e.active||e.waiting||e.installing).scriptURL.includes("/a/sc/sw.js")&&e.unregister()})})}}else{var f=e.location.search?"&":"?";r.location=r.location.origin+r.location.pathname+f+"utm_source=superchargify&utm_medium=amp&utm_campaign=superchargify&utm_content=add-to-cart"}function h(){r.caches.open("superchargify-shop").then(function(e){return e.addAll(s)}).catch(function(e){})}}(window,document,navigator,localStorage);</script>
+<!--/ Superchargify v2.0.4694a02c (https://www.superchargify.com) -->

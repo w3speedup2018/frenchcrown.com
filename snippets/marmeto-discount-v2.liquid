@@ -1,0 +1,424 @@
+<script>
+    $(document).on('page:load page:change', function() {
+      $('.cashback-msg').remove();
+      if((Shopify.Checkout.totalPrice * 0.1) > 0){
+        $('.order-summary__section--discount').append('<p class="cashback-msg" style="color: #197bbd;font-weight: bold;">(You will get <span>$'+parseInt(Shopify.Checkout.totalPrice * 0.1)+'</span> cashback which can be used in next order)</p>');
+      }
+      function checkInput(input, words) {
+        return words.some(word => input.toLowerCase().includes(word.toLowerCase()));
+      }
+
+      //JS Cookie Library
+      !function(e){var n=!1;if("function"==typeof define&&define.amd&&(define(e),n=!0),"object"==typeof exports&&(module.exports=e(),n=!0),!n){var o=window.Cookies,t=window.Cookies=e();t.noConflict=function(){return window.Cookies=o,t}}}(function(){function e(){for(var e=0,n={};e<arguments.length;e++){var o=arguments[e];for(var t in o)n[t]=o[t]}return n}return function n(o){function t(n,r,i){var c;if("undefined"!=typeof document){if(arguments.length>1){if("number"==typeof(i=e({path:"/"},t.defaults,i)).expires){var a=new Date;a.setMilliseconds(a.getMilliseconds()+864e5*i.expires),i.expires=a}i.expires=i.expires?i.expires.toUTCString():"";try{c=JSON.stringify(r),/^[\\{\\[]/.test(c)&&(r=c)}catch(e){}r=o.write?o.write(r,n):encodeURIComponent(String(r)).replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g,decodeURIComponent),n=(n=(n=encodeURIComponent(String(n))).replace(/%(23|24|26|2B|5E|60|7C)/g,decodeURIComponent)).replace(/[\\(\\)]/g,escape);var s="";for(var f in i)i[f]&&(s+="; "+f,!0!==i[f]&&(s+="="+i[f]));return document.cookie=n+"="+r+s}n||(c={});for(var p=document.cookie?document.cookie.split("; "):[],d=/(%[0-9A-Z]{2})+/g,u=0;u<p.length;u++){var l=p[u].split("="),C=l.slice(1).join("=");this.json||'"'!==C.charAt(0)||(C=C.slice(1,-1));try{var g=l[0].replace(d,decodeURIComponent);if(C=o.read?o.read(C,g):o(C,g)||C.replace(d,decodeURIComponent),this.json)try{C=JSON.parse(C)}catch(e){}if(n===g){c=C;break}n||(c[g]=C)}catch(e){}}return c}}return t.set=t,t.get=function(e){return t.call(t,e)},t.getJSON=function(){return t.apply({json:!0},[].slice.call(arguments))},t.defaults={},t.remove=function(n,o){t(n,"",e(o,{expires:-1}))},t.withConverter=n,t}(function(){})});
+      
+      /* pobox popup js start */
+      if(Shopify.Checkout.step == "contact_information"){
+      	$('[name="checkout[remember_me]"]').attr('checked', true);
+        $('[name="checkout[buyer_accepts_marketing]"]').attr('checked', true);
+        $(document).on('change','#checkout_shipping_address_address1, #checkout_shipping_address_address2',function(e){
+          if(!sessionStorage.getItem("pobox") && checkInput($(this).val(), ["P.O. box", "PO box", "PObox", "P.O box"])){
+            $('.fc_overlay, .fc_popupBox').show();
+            $('body').addClass('fc_body');
+            sessionStorage.setItem("pobox", true);
+          }
+        });
+        
+        $(document).on('click','.close-btn', function(e){
+          $('.fc_overlay, .fc_popupBox').hide();
+        });
+        
+        $(document).on('click', function(e){
+          if($(e.target).closest('.fc_popupBox').length != 0) return false;
+          $('.fc_overlay, .fc_popupBox').hide();
+          $('body').removeClass('fc_body');
+        });
+      }
+      /* pobox popup js end */
+      
+      if(Shopify.Checkout.step == "payment_method"){
+        {%- assign to = '' -%}
+        {%- assign message = '' -%}
+        {%- assign from = '' -%}
+        {%- assign gift_vid = '' -%}
+        {%- for item in checkout.line_items -%}
+          {%- for property in item.properties -%}
+            {%- if property.first == 'To' -%}     
+            	{%- assign to = property.last -%}
+            	{%- assign gift_vid = item.variant_id -%}
+            {%- elsif property.first == 'Message' -%}     
+            	{%- assign message = property.last -%}
+            {%- elsif property.first == 'From' -%}     
+            	{%- assign from = property.last -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endfor -%}
+//         $('[data-gateway-name="paypal"]').hide();
+//         $('.offsite-payment-gateway-logo:last').attr('src', 'https://cdn.shopify.com/s/files/1/0323/5574/5932/files/Paypal_and_credit_card.png?v=1635504265');
+//         $('.offsite-payment-gateway-logo:last').parents('label').append('<span style="font-weight: bold;">(Multi-currency Payment Available)</span>');
+        // $('<div style="font-weight: bold;padding-left: 40px;margin-bottom: 19px;">(Multi-currency Payment Available)</div>').insertBefore('#payment-gateway-subfields-74171744396');
+        // $('[data-select-gateway="74171744396"] label').html('<span style="vertical-align: top">2Checkout </span><img src="https://cdn.shopify.com/s/files/1/0323/5574/5932/files/Paypal_and_credit_card.png?v=1635504265" style="width: 130px">');
+        // $('[data-select-gateway="74171744396"] .payment-method-wrapper').append('<span style="font-weight: bold;">(Multi-currency Payment Available)</span>');
+        $('[data-select-gateway="74171744396"] label').html('2Checkout <span style="font-weight: bold;">(Multi-currency Payment Available)</span>');
+        // $('[data-select-gateway="78188478604"] label').html('<img src="https://cdn.shopify.com/s/files/1/0323/5574/5932/files/payoneer.png?v=1676356432" style="width: 100px;margin-top: -8px;"><br><div style="font-weight: bold;margin-top: -5px;">Pay by Visa / Master Card</div>');
+        $('[data-select-gateway="78188478604"] label').html('<div style="font-weight: bold;">Pay by Amex / Visa / Master Card (Recommended Option)</div>');
+        if($('[data-brand-icons-for-gateway="78188478604"] .payment-icon--american-express').length == 0){
+            $('[data-brand-icons-for-gateway="78188478604"]').prepend('<li class="payment-icon payment-icon--american-express" data-payment-icon="american-express" aria-current="false"><span class="visually-hidden">American Express, </span></li>');
+        }
+        // 		$('[data-gateway-name="paypal"]').appendTo( ".section--payment-method .content-box" );
+// 		$('#payment-gateway-subfields-'+$('[data-gateway-name="paypal"]').attr('data-select-gateway')).appendTo( ".section--payment-method .content-box" );
+	  	$('#payment-gateway-subfields-74171744396').prepend("<p class='checkout-currency-options'>Currency Options Available For Payment : GBP, USD, AUD, CAD, EUR, JPY, MXN</p>");
+        $('#payment-gateway-subfields-74171744396 .shown-if-js').html("After clicking “Complete order”, you will be redirected to 2Checkout Convert Plus, there <b style='font-weight: bold;'>you can select currency on top right corner</b> and then you can  complete your purchase securely.");
+        $('[data-select-gateway="73213345932"] label').text('Razorpay Secure (Cards and paypal wallet)');
+		$('#payment-gateway-subfields-73213345932 .shown-if-js').text('After clicking “Complete order”, you will be redirected to Razorpay Secure to complete your purchase securely.');
+        $('[data-select-gateway="47217279116"] .radio__label__primary').html("<span style='font-weight: bold;'>Credit Card / Debit Card</span>");
+        $('[data-select-gateway="47217279116"] .radio__label').prepend('<label for="checkout_payment_gateway_47217279116" class="radio__label__primary content-box__emphasis" style="display: flex;"><svg viewBox="0 0 60 25" xmlns="http://www.w3.org/2000/svg" width="60" height="25" class="UserLogo variant-- NewsroomInfoLogoGridGraphic__logo" style=""><title>Stripe logo</title><path fill="var(--userLogoColor, #635bff)" d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.04 1.26-.06 1.48zm-5.92-5.62c-1.03 0-2.17.73-2.17 2.58h4.25c0-1.85-1.07-2.58-2.08-2.58zM40.95 20.3c-1.44 0-2.32-.6-2.9-1.04l-.02 4.63-4.12.87V5.57h3.76l.08 1.02a4.7 4.7 0 0 1 3.23-1.29c2.9 0 5.62 2.6 5.62 7.4 0 5.23-2.7 7.6-5.65 7.6zM40 8.95c-.95 0-1.54.34-1.97.81l.02 6.12c.4.44.98.78 1.95.78 1.52 0 2.54-1.65 2.54-3.87 0-2.15-1.04-3.84-2.54-3.84zM28.24 5.57h4.13v14.44h-4.13V5.57zm0-4.7L32.37 0v3.36l-4.13.88V.88zm-4.32 9.35v9.79H19.8V5.57h3.7l.12 1.22c1-1.77 3.07-1.41 3.62-1.22v3.79c-.52-.17-2.29-.43-3.32.86zm-8.55 4.72c0 2.43 2.6 1.68 3.12 1.46v3.36c-.55.3-1.54.54-2.89.54a4.15 4.15 0 0 1-4.27-4.24l.01-13.17 4.02-.86v3.54h3.14V9.1h-3.13v5.85zm-4.91.7c0 2.97-2.31 4.66-5.73 4.66a11.2 11.2 0 0 1-4.46-.93v-3.93c1.38.75 3.1 1.31 4.46 1.31.92 0 1.53-.24 1.53-1C6.26 13.77 0 14.51 0 9.95 0 7.04 2.28 5.3 5.62 5.3c1.36 0 2.72.2 4.09.75v3.88a9.23 9.23 0 0 0-4.1-1.06c-.86 0-1.44.25-1.44.9 0 1.85 6.29.97 6.29 5.88z" fill-rule="evenodd"></path></svg></label>');
+        // $('[data-select-gateway="73213345932"], #payment-gateway-subfields-73213345932').insertBefore('[data-select-gateway="47221637260"]');
+        // $('[data-select-gateway="74171842700"], #payment-gateway-subfields-74171842700').insertBefore('[data-select-gateway="47221637260"]');
+        // $('[data-select-gateway="74171744396"], #payment-gateway-subfields-74171744396').insertBefore('[data-select-gateway="47221637260"]');
+        $('[data-select-gateway="78188478604"], #payment-gateway-subfields-78188478604').insertBefore('[data-select-gateway="47217279116"]');
+        47221637260
+        // $('[data-select-gateway="47221637260"]').find('.radio__label label').append('<div style="padding-top: 5px;">(This Secured payment is Covered Under Buyer Protection Program)</div>')
+        $('#payment-gateway-subfields-47217279116').addClass('hidden');
+//         $('[data-select-gateway="73213345932"], #payment-gateway-subfields-73213345932').insertAfter('#payment-gateway-subfields-47221637260');
+		$('#payment-gateway-subfields-78188478604').removeClass('hidden');
+        // hide paypal
+        // $('#payment-gateway-subfields-47221637260, [data-select-gateway="47221637260"]').addClass('hidden');
+        $('.section--payment-method .section__title').text('Payment (All transactions are covered under buyer protection program)');
+        $('#checkout_payment_gateway_78188478604').click();
+      }
+      
+      if(Shopify.Checkout.step == "shipping_method" && $('#checkout_shipping_rate_id_shopify-standard-0_00').length == 0){
+        $('.section__content').append('<br><p style="font-weight:bold">NOTE: Free shipping worldwide above $49 USD. Also get extra 10% off when you buy 2 items and extra 15% off when you buy 3 items.</p>')
+      }
+      
+      var discountHtml = $("#discount-wrapper").html();
+      $('.order-summary__section--discount').append(discountHtml);
+      $(".gift-wrap-section").insertBefore('.section--tip').show();
+      $(document).on("click","#apply-discount",function(){
+        $(this).html('<img src="https://cdn.shopify.com/s/files/1/0094/6326/7379/files/black-loader.gif?v=1681550751" style="width: 25px">');
+        var discountCode = $(this).data('discount-code');
+        $('[name="checkout[reduction_code]"]').val(discountCode);
+        $('[name="checkout[reduction_code]"]').closest('form').submit();
+        setTimeout(function(){
+          location.reload();
+        }, 500);
+      });
+      
+      $(document).on("click",".code-button a",function(){
+        $(this).fadeOut();
+        $(this).closest('.section__discount').find('.section__discount-description').stop().slideDown();
+      });
+
+      function checkDiscountApplied(){
+        $('.tags-list .tag').each(function(){
+          var discountCode = $(this).find(".reduction-code__text").text();
+          $('.'+discountCode).addClass('applied-discount');
+        });
+        $('.discount-button-wrapper .section__discount').each(function(){
+          var isDiscountApplied = $(this).find(".apply-button").hasClass('applied-discount');
+          if(!isDiscountApplied){
+            $(this).addClass('disabled-discount');
+          }
+        });
+      }
+
+      var appliedDiscount = $(".tags-list .tag").length;
+      if(appliedDiscount){
+        checkDiscountApplied();
+      }
+
+      $(document).on('click','.tags-list .tag__wrapper .tag__button',function(e){
+        e.preventDefault();    
+        $('form [data-trekkie-id="apply_discount_button"]').addClass("btn--loading");
+        var formTag = $(this).closest('form');
+        var tagUrl = $(formTag).attr("action");
+        $.ajax({
+          url: tagUrl,
+          type: 'post',
+          data: formTag.serialize(),
+          success: function(response) {
+            location.reload();
+          }
+        })
+      });
+      $(document).on('change','#is-gift-wrap',function(e){
+        if($(this).prop('checked')){
+        	$(".gift-wrap-form").show(1000);
+        }else{
+        	$(".gift-wrap-form").hide(1000);
+        }
+      });
+      
+      $(document).on('click','.edit-message',function(e){
+      	$(".gift-wrap-form").show(1000);
+      });
+      
+      $(document).on('click','.gift-card-submit-btn',function(e){
+       	var recipient_name = $.trim($('#recipient-name').val());
+        var gift_message = $.trim($('#gift-message').val());
+        var sender_name = $.trim($('#sender-name').val());
+        if(recipient_name == '' || gift_message == '' || sender_name ==''){
+        	$('.gift-card-submit').trigger('click');
+        }else{
+          $(this).attr('disabled', true).css("cursor", "not-allowed");
+          {% if to == '' %}
+            $.ajax({
+              type: "POST",
+              url: '/cart/add.js',
+              dataType: "json",
+              data: $('.gift-card-form').serialize(),
+              success: function(res) {
+                location.reload();
+              },
+              error: function(e) {
+                alert('error');
+              }
+            });
+          {% else %}
+            $.ajax({
+              type: "POST",
+              url: "/cart/change.js",
+              dataType: "json",
+              data: {
+                id: "{{ gift_vid }}",
+                quantity: 0,
+              },
+              success: function(res) {
+                $.ajax({
+                  type: "POST",
+                  url: '/cart/add.js',
+                  dataType: "json",
+                  data: $('.gift-card-form').serialize(),
+                  success: function(res) {
+                    location.reload();
+                  },
+                  error: function(e) {
+                    alert('error');
+                  }
+                });
+              }
+            });
+          {% endif %}
+        }
+      });
+      $(document).on('click','.remove-gift-card',function(e){
+        $.ajax({
+          type: "POST",
+          url: "/cart/change.js",
+          dataType: "json",
+          data: {
+            id: "{{ gift_vid }}",
+            quantity: 0,
+          },
+          success: function(res) {
+            location.reload();
+          },
+          error: function(e) {
+            alert('error');
+          }
+        });
+      });
+
+      $(document).on('change','.gift-type',function(e){
+        if($(this).val() == '40744948695180'){
+          $('.videowrapper').show(1000);
+        }else{
+          $('.videowrapper').hide(1000);
+        }
+      });
+      
+      $.getJSON('/cart.js', function(cart) {
+        var variant_ids = [];
+        $.each(cart.items, function(key,val) {
+          variant_ids.push(val.variant_id);
+        });
+        if(variant_ids.includes(40744948695180)){
+          $('#premium_gift').prop('checked', true).change();
+        }else if(variant_ids.includes(40744948662412)){
+          $('#normal_gift').prop('checked', true).change();
+        }
+      });
+    });
+</script>
+
+<div id="discount-wrapper">
+  <div class="discount-button-wrapper">
+    <div class="discount-wrapper">
+      <div class="section__discount">
+        <div class="section__discount-code">
+          <div class="svg-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13.68" height="12.224" viewBox="0 0 13.68 12.224"><defs><style>.a{fill:#717171;}.b{fill:#a8a8a8;}</style></defs><g transform="translate(0 -23.224)"><g transform="translate(0 23.224)"><g transform="translate(0 0)"><path class="a" d="M10.67,23.224H6.47a1,1,0,0,0-.709.294L.294,28.984a1,1,0,0,0,0,1.419l4.2,4.2a1,1,0,0,0,1.418,0l5.467-5.466a1.006,1.006,0,0,0,.294-.71v-4.2A1,1,0,0,0,10.67,23.224ZM8.915,26.735a.752.752,0,1,1,.752-.752A.753.753,0,0,1,8.915,26.735Z" transform="translate(0 -23.224)"></path></g></g><g transform="translate(6.865 24.227)"><g transform="translate(0 0)"><path class="b" d="M224.8,55.224v4.669a.871.871,0,0,1-.256.617l-5.555,5.555.085.085a1,1,0,0,0,1.418,0l5.017-5.016a1,1,0,0,0,.294-.709v-4.2A1,1,0,0,0,224.8,55.224Z" transform="translate(-218.988 -55.224)"></path></g></g></g></svg>
+          </div>
+          <div class="discount-code-wrapper">
+            <div class="code-button">
+              <p class="code-off">BUY2 - Buy any 2 or more products and get 10% off + 1 free Gift </p>
+              <a href="javascript:void(0);" style="display: none;">View Details</a>
+            </div>
+            <div class="apply-button BUY2">
+              <p id="apply-discount" data-discount-code="BUY2">
+                <span>Apply</span>
+                <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="19.13" height="13.018" viewBox="0 0 19.13 13.018"><defs><style>.tick-a{fill:#197bbd;}</style></defs><g transform="translate(-15.876 -21.316)"><g transform="translate(15.876 21.316)"><path class="tick-a" d="M141.879,165.829a1.49,1.49,0,0,0-2.107-.056l-9.516,9.025-4.539-4.66a1.491,1.491,0,0,0-2.136,2.08l5.565,5.714a1.491,1.491,0,0,0,2.094.042l10.583-10.037A1.49,1.49,0,0,0,141.879,165.829Z" transform="translate(-123.158 -165.364)"></path></g></g></svg>
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section__discount">
+        <div class="section__discount-code">
+          <div class="svg-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13.68" height="12.224" viewBox="0 0 13.68 12.224"><defs><style>.a{fill:#717171;}.b{fill:#a8a8a8;}</style></defs><g transform="translate(0 -23.224)"><g transform="translate(0 23.224)"><g transform="translate(0 0)"><path class="a" d="M10.67,23.224H6.47a1,1,0,0,0-.709.294L.294,28.984a1,1,0,0,0,0,1.419l4.2,4.2a1,1,0,0,0,1.418,0l5.467-5.466a1.006,1.006,0,0,0,.294-.71v-4.2A1,1,0,0,0,10.67,23.224ZM8.915,26.735a.752.752,0,1,1,.752-.752A.753.753,0,0,1,8.915,26.735Z" transform="translate(0 -23.224)"></path></g></g><g transform="translate(6.865 24.227)"><g transform="translate(0 0)"><path class="b" d="M224.8,55.224v4.669a.871.871,0,0,1-.256.617l-5.555,5.555.085.085a1,1,0,0,0,1.418,0l5.017-5.016a1,1,0,0,0,.294-.709v-4.2A1,1,0,0,0,224.8,55.224Z" transform="translate(-218.988 -55.224)"></path></g></g></g></svg>
+          </div>
+          <div class="discount-code-wrapper">
+            <div class="code-button">
+              <p class="code-off">BUY3 - Buy any 3 or more products and get 15% off + 1 free Gift </p>
+              <a href="javascript:void(0);" style="display: none;">View Details</a>
+            </div>
+            <div class="apply-button BUY3">
+              <p id="apply-discount" data-discount-code="BUY3">
+                <span>Apply</span>
+                <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="19.13" height="13.018" viewBox="0 0 19.13 13.018"><defs><style>.tick-a{fill:#197bbd;}</style></defs><g transform="translate(-15.876 -21.316)"><g transform="translate(15.876 21.316)"><path class="tick-a" d="M141.879,165.829a1.49,1.49,0,0,0-2.107-.056l-9.516,9.025-4.539-4.66a1.491,1.491,0,0,0-2.136,2.08l5.565,5.714a1.491,1.491,0,0,0,2.094.042l10.583-10.037A1.49,1.49,0,0,0,141.879,165.829Z" transform="translate(-123.158 -165.364)"></path></g></g></svg>
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section__discount">
+        <div class="section__discount-code">
+          <div class="svg-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13.68" height="12.224" viewBox="0 0 13.68 12.224"><defs><style>.a{fill:#717171;}.b{fill:#a8a8a8;}</style></defs><g transform="translate(0 -23.224)"><g transform="translate(0 23.224)"><g transform="translate(0 0)"><path class="a" d="M10.67,23.224H6.47a1,1,0,0,0-.709.294L.294,28.984a1,1,0,0,0,0,1.419l4.2,4.2a1,1,0,0,0,1.418,0l5.467-5.466a1.006,1.006,0,0,0,.294-.71v-4.2A1,1,0,0,0,10.67,23.224ZM8.915,26.735a.752.752,0,1,1,.752-.752A.753.753,0,0,1,8.915,26.735Z" transform="translate(0 -23.224)"></path></g></g><g transform="translate(6.865 24.227)"><g transform="translate(0 0)"><path class="b" d="M224.8,55.224v4.669a.871.871,0,0,1-.256.617l-5.555,5.555.085.085a1,1,0,0,0,1.418,0l5.017-5.016a1,1,0,0,0,.294-.709v-4.2A1,1,0,0,0,224.8,55.224Z" transform="translate(-218.988 -55.224)"></path></g></g></g></svg>
+          </div>
+          <div class="discount-code-wrapper">
+            <div class="code-button">
+              <p class="code-off">BUY4 - Buy any 4 products and get 1 product free + 1 free Gift </p>
+              <a href="javascript:void(0);" style="display: none;">View Details</a>
+            </div>
+            <div class="apply-button BUY4">
+              <p id="apply-discount" data-discount-code="BUY4">
+                <span>Apply</span>
+                <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="19.13" height="13.018" viewBox="0 0 19.13 13.018"><defs><style>.tick-a{fill:#197bbd;}</style></defs><g transform="translate(-15.876 -21.316)"><g transform="translate(15.876 21.316)"><path class="tick-a" d="M141.879,165.829a1.49,1.49,0,0,0-2.107-.056l-9.516,9.025-4.539-4.66a1.491,1.491,0,0,0-2.136,2.08l5.565,5.714a1.491,1.491,0,0,0,2.094.042l10.583-10.037A1.49,1.49,0,0,0,141.879,165.829Z" transform="translate(-123.158 -165.364)"></path></g></g></svg>
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% if checkout.customer %}
+      	{% assign customer_tags = checkout.customer.tags | downcase %}
+        {% if customer_tags contains 'old' %}
+		<input type="hidden" class="is_old_customer" value="true">
+      	<div class="section__discount">
+            <div class="section__discount-code">
+              <div class="svg-wrapper">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13.68" height="12.224" viewBox="0 0 13.68 12.224"><defs><style>.a{fill:#717171;}.b{fill:#a8a8a8;}</style></defs><g transform="translate(0 -23.224)"><g transform="translate(0 23.224)"><g transform="translate(0 0)"><path class="a" d="M10.67,23.224H6.47a1,1,0,0,0-.709.294L.294,28.984a1,1,0,0,0,0,1.419l4.2,4.2a1,1,0,0,0,1.418,0l5.467-5.466a1.006,1.006,0,0,0,.294-.71v-4.2A1,1,0,0,0,10.67,23.224ZM8.915,26.735a.752.752,0,1,1,.752-.752A.753.753,0,0,1,8.915,26.735Z" transform="translate(0 -23.224)"></path></g></g><g transform="translate(6.865 24.227)"><g transform="translate(0 0)"><path class="b" d="M224.8,55.224v4.669a.871.871,0,0,1-.256.617l-5.555,5.555.085.085a1,1,0,0,0,1.418,0l5.017-5.016a1,1,0,0,0,.294-.709v-4.2A1,1,0,0,0,224.8,55.224Z" transform="translate(-218.988 -55.224)"></path></g></g></g></svg>
+              </div>
+              <div class="discount-code-wrapper">
+                <div class="code-button">
+                  <p class="code-off">Next10 - Get flat 10% Off</p>
+                  <a href="javascript:void(0);" style="display: none;">View Details</a>
+                </div>
+                <div class="apply-button NEXT10">
+                  <p id="apply-discount" data-discount-code="NEXT10">
+                    <span>Apply</span>
+                    <span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="19.13" height="13.018" viewBox="0 0 19.13 13.018"><defs><style>.tick-a{fill:#197bbd;}</style></defs><g transform="translate(-15.876 -21.316)"><g transform="translate(15.876 21.316)"><path class="tick-a" d="M141.879,165.829a1.49,1.49,0,0,0-2.107-.056l-9.516,9.025-4.539-4.66a1.491,1.491,0,0,0-2.136,2.08l5.565,5.714a1.491,1.491,0,0,0,2.094.042l10.583-10.037A1.49,1.49,0,0,0,141.879,165.829Z" transform="translate(-123.158 -165.364)"></path></g></g></svg>
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+      	{% endif %}
+      {% endif %}
+    </div>
+<!--     <button name="button" type="submit" class="field__input-btn btn btn--disabled" data-trekkie-id="apply_discount_button" aria-busy="false" disabled="disabled">
+      Apply
+    </button> -->
+  </div>
+</div>
+<div class="gift-wrap-section" style="border: 1px solid #dedede;border-radius: 5px;overflow: hidden;margin-top: 20px;display: none;">
+  <form action="/cart/add" class="gift-card-form">
+    {% if to == '' %}
+      <div class="gift-wrap-details" style="position: relative;padding: 31px 15px;background: #fff;">
+        <div class="checkbox__input">
+          <input type="checkbox" id="is-gift-wrap" class="input-checkbox" style="position: absolute;">
+        </div>
+        <label class="checkbox__label" for="is-gift-wrap" style="font-weight: bold;padding-left: 18px;">Select Gifting Option, Starting From $2 USD</label>
+        <img src="https://cdn.shopify.com/s/files/1/0094/6326/7379/files/gift-wrap.png?v=1651922810" style="position: absolute;right: 18px;width: 18px;top: 0;">
+      </div>
+    {% else %}
+      <div class="gift-wrap-details" style="position: relative;padding: 20px 20px 21px;background: #fff;">
+        <label class="checkbox__label" for="is-gift-wrap" style="font-weight: bold;">Yay! Gift Wrapping Applied</label>
+        <p style="padding-bottom: 6px;">Your order will be gift wrapped with message</p>
+        <ul class="gift-actions">
+          <li style="display: inline-block;font-weight: bold;color: #f7827a;margin-right: 10px;cursor: pointer;" class="edit-message">Edit</li>
+          <li class="remove-gift-card" style="display: inline-block;font-weight: bold;color: #f7827a;cursor: pointer;">Remove</li>
+        </ul>
+        <img src="https://cdn.shopify.com/s/files/1/0094/6326/7379/files/gift-wrap.png?v=1651922810" style="position: absolute;right: 18px;width: 23px;top: 1px;">
+      </div>
+    {% endif %}
+    <div class="gift-wrap-form" style="background: rgb(255, 255, 255);padding: 5px 10px;border-top: 1px solid #dedede;display:none;">
+      <fieldset class="content-box" style="margin: 10px 0;">
+        <div class="radio-wrapper content-box__row">
+          <div class="radio__input">
+            <input class="input-radio gift-type" type="radio" checked="checked" name="id" id="premium_gift" value="40744948695180">
+          </div>
+          <label class="radio__label content-box__emphasis" for="premium_gift">Premium Gift Wrapping For $9 USD
+          </label>
+        </div>
+        <div class="radio-wrapper content-box__row">
+          <div class="radio__input">
+            <input class="input-radio gift-type" type="radio" name="id" id="normal_gift" value="40744948662412">
+          </div>
+          <label class="radio__label content-box__emphasis" for="normal_gift">Normal Gift Wrapping For $2 USD
+          </label>
+        </div>
+      </fieldset>
+      <div class="videowrapper">
+        <iframe height="315" src="https://www.youtube.com/embed/JjPtlHAuzjQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="field__input-btn-wrapper" style="padding: 10px 0;">
+        <div class="field__input-wrapper">
+          <input placeholder="Recipient Name" class="field__input" id="recipient-name" type="text" name="properties[To]" required value="{{to}}">
+        </div>
+      </div>
+      <div class="field__input-btn-wrapper" style="padding: 10px 0;">
+        <div class="field__input-wrapper">
+          <input placeholder="Message" class="field__input" id="gift-message" type="text" name="properties[Message]" required value="{{message}}">
+        </div>
+      </div>
+      <div class="field__input-btn-wrapper" style="padding: 10px 0;">
+        <div class="field__input-wrapper">
+          <input placeholder="Sender Name" class="field__input" id="sender-name" type="text" name="properties[From]" required value="{{from}}">
+        </div>
+      </div>
+      <div class="field__input-btn-wrapper" style="padding: 10px 0;">
+          <button name="button" type="submit" class="gift-card-submit" style="background: black;color: white;padding: 10px;border-radius: 5px;display:none;">Save</button>
+          <button name="button" type="button" class="gift-card-submit-btn" style="background: black;color: white;padding: 10px;border-radius: 5px;cursor:pointer;">Save</button>
+      </div>
+  	</div>
+  </form>
+</div>
+<style>
+  .videowrapper {
+      float: none;
+      clear: both;
+      width: 100%;
+      position: relative;
+      padding-bottom: 56.25%;
+      padding-top: 25px;
+      height: 0;
+  }
+  .videowrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+  }
+</style>

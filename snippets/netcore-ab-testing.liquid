@@ -1,0 +1,289 @@
+<script>
+	/* Netcore GA AB Testing Integration Start */
+	setTimeout(function() {
+	  var bxGaCallBack_two = function(gaName, eventName, device, pageName, title) {
+	      if (ga) {
+	          ga("create", "UA-177522570-1", {
+	              name: gaName,
+	          });
+	          ga(gaName + ".send", {
+	              hitType: "event",
+	              eventCategory: "FrenchCrown",
+	              eventAction: eventName + " | FrenchCrown | " + device + " | " + pageName + " | " + title,
+	              eventLabel: "FrenchCrown",
+	              eventValue: 0,
+	          });
+	      } else {
+	          console.log("ga not found");
+	      }
+	  };
+
+	  if (window.screen.width > 767) {
+	    var devise = 'Desktop';
+	    var gtm_box = 'gtmlboxx1';
+	    var gtm_box_pdp = 'gtmlboxx3';
+	    var gtm_box_nat = 'gtmlboxx8';
+	    var gtm_box_nas = 'gtmlboxx3';
+	    var gtm_box_nasuit = 'gtmlboxx10';
+	    var gtm_box_piw = 'gtmlboxx7';
+	  } else if (window.screen.width < 768) {
+	    var devise = 'Mobile';
+	    var gtm_box = 'gtmlboxx2';
+	    var gtm_box_pdp = 'gtmlboxx3';
+	    var gtm_box_nat = 'gtmlboxx9';
+	    var gtm_box_nas = 'gtmlboxx4';
+	    var gtm_box_nasuit = 'gtmlboxx7';
+	    var gtm_box_piw = 'gtmlboxx11';
+	  }
+	  
+	      
+	  $(window).on('DOMContentLoaded load resize scroll', function() {
+	  	window.bxGaListeners = {}
+	    // PLP
+	    setTimeout(function() {
+	      var plp = document.querySelector('.CollectionMain .ProductList');
+	      if (plp != undefined) {
+	          var myElementHeight = plp.offsetHeight;
+	          var myElementWidth = plp.offsetWidth;
+	          var bounding2 = plp.getBoundingClientRect();
+	          if (bounding2.top >= -myElementHeight &&
+	              bounding2.left >= -myElementWidth &&
+	              bounding2.right <= (window.innerWidth || document.documentElement.clientWidth) + myElementWidth &&
+	              bounding2.bottom <= (window.innerHeight || document.documentElement.clientHeight) + myElementHeight) {
+	              if (document.querySelectorAll(".CollectionMain .ProductList>div:not([data-recoedproduct]) [href]").length && !window.bxGaListeners[".CollectionMain .ProductList>div:not([data-recoedproduct]) [href]"]) {
+	                  window.bxGaListeners[".CollectionMain .ProductList>div:not([data-recoedproduct]) [href]"] = true;
+	                  console.log('PLP.......');
+	                  setTimeout(
+	                      bxGaCallBack_two, 5000,
+	                      gtm_box,
+	                      "Impression",
+	                      devise,
+	                      "PLP",
+	                      "StandardProduct"
+	                  );
+
+	                  document
+	                      .querySelectorAll(".CollectionMain .ProductList>div:not([data-recoedproduct]) [href]")
+	                      .forEach(function(block) {
+	                          block.addEventListener("click", function clicklisnrForGa() {
+	                              console.log("PLP Click.....");
+	                              setTimeout(
+	                                  bxGaCallBack_two, 5000,
+	                                  gtm_box,
+	                                  "Click",
+	                                  devise,
+	                                  "PLP",
+	                                  "StandardProduct"
+	                              );
+	                          });
+	                      });
+	              }
+	          }
+	      }
+	      // PDP
+	      var pdp_ymal = document.querySelector('#shopify-section-product-recommendations');
+	      if (pdp_ymal != undefined) {
+	          var myElementHeight = pdp_ymal.offsetHeight;
+	          var myElementWidth = pdp_ymal.offsetWidth;
+	          var bounding1 = pdp_ymal.getBoundingClientRect();
+	          if (bounding1.top >= -myElementHeight &&
+	              bounding1.left >= -myElementWidth &&
+	              bounding1.right <= (window.innerWidth || document.documentElement.clientWidth) + myElementWidth &&
+	              bounding1.bottom <= (window.innerHeight || document.documentElement.clientHeight) + myElementHeight) {
+	              if (document.querySelectorAll("#shopify-section-product-recommendations .ProductItem [href]").length && !window.bxGaListeners["#shopify-section-product-recommendations .ProductItem [href]"]) {
+	                  console.log('PDP.......');
+	                  window.bxGaListeners["#shopify-section-product-recommendations .ProductItem [href]"] = true;
+
+	                  setTimeout(
+	                      bxGaCallBack_two, 5000,
+	                      gtm_box_pdp,
+	                      "Impression",
+	                      devise,
+	                      "PDP",
+	                      "YouMayAlsoLike"
+	                  );
+
+	                  document
+	                      .querySelectorAll("#shopify-section-product-recommendations .ProductItem [href]")
+	                      .forEach(function(block) {
+	                          block.addEventListener("click", function clicklisnrForGa() {
+	                              console.log("PDP Click.....");
+	                              setTimeout(
+	                                  bxGaCallBack_two, 5000,
+	                                  gtm_box_pdp,
+	                                  "Click",
+	                                  devise,
+	                                  "PDP",
+	                                  "YouMayAlsoLike"
+	                              );
+	                          });
+	                      });
+	              }
+	          }
+	      }
+
+	      var pdp_piw = document.querySelector('#shopify-section-pair-products');
+	      if (pdp_piw != undefined) {
+	          var myElementHeight = pdp_piw.offsetHeight;
+	          var myElementWidth = pdp_piw.offsetWidth;
+	          var bounding1 = pdp_piw.getBoundingClientRect();
+	          if (bounding1.top >= -myElementHeight &&
+	              bounding1.left >= -myElementWidth &&
+	              bounding1.right <= (window.innerWidth || document.documentElement.clientWidth) + myElementWidth &&
+	              bounding1.bottom <= (window.innerHeight || document.documentElement.clientHeight) + myElementHeight) {
+	              if (document.querySelectorAll("#shopify-section-pair-products .ProductItem [href]").length && !window.bxGaListeners["#shopify-section-pair-products .ProductItem [href]"]) {
+	                  console.log('Pair it with.......');
+	                  window.bxGaListeners["#shopify-section-pair-products .ProductItem [href]"] = true;
+
+	                  setTimeout(
+	                      bxGaCallBack_two, 5000,
+	                      gtm_box_piw,
+	                      "Impression",
+	                      devise,
+	                      "PDP",
+	                      "PairItWith"
+	                  );
+
+	                  document
+	                      .querySelectorAll("#shopify-section-pair-products .ProductItem [href]")
+	                      .forEach(function(block) {
+	                          block.addEventListener("click", function clicklisnrForGa() {
+	                              console.log("PDP Click.....");
+	                              setTimeout(
+	                                  bxGaCallBack_two, 5000,
+	                                  gtm_box_piw,
+	                                  "Click",
+	                                  devise,
+	                                  "PDP",
+	                                  "PairItWith"
+	                              );
+	                          });
+	                      });
+	              }
+	          }
+	      }
+	    }, 2000)
+
+	    // Home Page
+	    setTimeout(function() {
+	      var nat = document.querySelector('#block-161440457547abe3f9-0');
+	      if (nat != undefined) {
+	          var myElementHeight = nat.offsetHeight;
+	          var myElementWidth = nat.offsetWidth;
+	          var bounding1 = nat.getBoundingClientRect();
+	          if (bounding1.top >= -myElementHeight &&
+	              bounding1.left >= -myElementWidth &&
+	              bounding1.right <= (window.innerWidth || document.documentElement.clientWidth) + myElementWidth &&
+	              bounding1.bottom <= (window.innerHeight || document.documentElement.clientHeight) + myElementHeight) {
+	              if (document.querySelectorAll("#block-161440457547abe3f9-0 .Carousel__Cell [href]").length && !window.bxGaListeners["#block-161440457547abe3f9-0 .Carousel__Cell [href]"]) {
+	                window.bxGaListeners["#block-161440457547abe3f9-0 .Carousel__Cell [href]"] = true;
+	                console.log('NewArrivalTshirts.......');
+	                setTimeout(
+	                    bxGaCallBack_two, 5000,
+	                    gtm_box_nat,
+	                    "Impression",
+	                    devise,
+	                    "Home",
+	                    "NewArrivalTshirts"
+	                );
+
+	                document
+	                    .querySelectorAll("#block-161440457547abe3f9-0 .Carousel__Cell [href]")
+	                    .forEach(function(block) {
+	                        block.addEventListener("click", function clicklisnrForGa() {
+	                            setTimeout(
+	                                bxGaCallBack_two, 5000,
+	                                gtm_box_nat,
+	                                "Click",
+	                                devise,
+	                                "Home",
+	                                "NewArrivalTshirts"
+	                            );
+	                        });
+	                    });
+	            }
+	          }
+	      }
+
+	      var nas = document.querySelector('#block-1563513337430-0');
+	      if (nas != undefined) {
+	          var myElementHeight = nas.offsetHeight;
+	          var myElementWidth = nas.offsetWidth;
+	          var bounding2 = nas.getBoundingClientRect();
+	          if (bounding2.top >= -myElementHeight &&
+	              bounding2.left >= -myElementWidth &&
+	              bounding2.right <= (window.innerWidth || document.documentElement.clientWidth) + myElementWidth &&
+	              bounding2.bottom <= (window.innerHeight || document.documentElement.clientHeight) + myElementHeight) {
+	              if (document.querySelectorAll("#block-1563513337430-0 .Carousel__Cell [href]").length && !window.bxGaListeners["#block-1563513337430-0 .Carousel__Cell [href]"]) {
+	                  window.bxGaListeners["#block-1563513337430-0 .Carousel__Cell [href]"] = true;
+	                  console.log('NewArrivalShirts.......');
+	                  setTimeout(
+	                      bxGaCallBack_two, 5000,
+	                      gtm_box_nas,
+	                      "Impression",
+	                      devise,
+	                      "Home",
+	                      "NewArrivalShirts"
+	                  );
+
+	                  document
+	                      .querySelectorAll("#block-1563513337430-0 .Carousel__Cell [href]")
+	                      .forEach(function(block) {
+	                          block.addEventListener("click", function clicklisnrForGa() {
+	                              setTimeout(
+	                                  bxGaCallBack_two, 5000,
+	                                  gtm_box_nas,
+	                                  "Click",
+	                                  devise,
+	                                  "Home",
+	                                  "NewArrivalShirts"
+	                              );
+	                          });
+	                      });
+	              }
+	          }
+	      }
+
+	      var nasuits = document.querySelector('#block-1563513773440-0');
+	      if (nasuits != undefined) {
+	          var myElementHeight = nasuits.offsetHeight;
+	          var myElementWidth = nasuits.offsetWidth;
+	          var bounding1 = nasuits.getBoundingClientRect();
+	          if (bounding1.top >= -myElementHeight &&
+	              bounding1.left >= -myElementWidth &&
+	              bounding1.right <= (window.innerWidth || document.documentElement.clientWidth) + myElementWidth &&
+	              bounding1.bottom <= (window.innerHeight || document.documentElement.clientHeight) + myElementHeight) {
+	              if (document.querySelectorAll("#block-1563513773440-0 .Carousel__Cell [href]").length && !window.bxGaListeners["#block-1563513773440-0 .Carousel__Cell [href]"]) {
+	                window.bxGaListeners["#block-1563513773440-0 .Carousel__Cell [href]"] = true;
+	                console.log('NewArrivalSuits.......');
+	                setTimeout(
+	                    bxGaCallBack_two, 5000,
+	                    gtm_box_nasuit,
+	                    "Impression",
+	                    devise,
+	                    "Home",
+	                    "NewArrivalSuits"
+	                );
+
+	                document
+	                    .querySelectorAll("#block-1563513773440-0 .Carousel__Cell [href]")
+	                    .forEach(function(block) {
+	                        block.addEventListener("click", function clicklisnrForGa() {
+	                            setTimeout(
+	                                bxGaCallBack_two, 5000,
+	                                gtm_box_nasuit,
+	                                "Click",
+	                                devise,
+	                                "Home",
+	                                "NewArrivalSuits"
+	                            );
+	                        });
+	                    });
+	              }
+	          }
+	      }
+	    }, 3000)
+	  });
+	}, 3000)
+	/* Netcore GA AB Testing Integration End */
+</script>

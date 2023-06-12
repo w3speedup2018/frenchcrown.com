@@ -1,0 +1,278 @@
+{%- if template.name == 'page' or template.name == 'blog' or template == 'customers/account' or template == 'customers/order' or template == 'customers/addresses' -%}
+  {%- assign add_top_margin = true -%}
+{%- else -%}
+  {%- assign add_top_margin = false -%}
+{%- endif -%}
+
+{%- if template == 'page.collections' -%}
+  {%- assign add_top_margin = false -%}
+{%- endif -%}
+{% if template.name == "index" %} 
+  <div class="homepage-content" style="margin-top: 15px;padding: 30px;font-size:15px;">
+    <h1 style="font-weight: bold;">French Crown Global Store : Elevating Fashion to a Whole New Level</h1>
+    Welcome to French Crown Global, the ultimate destination for fashion-forward men and women.
+    Our premium collections are designed for individuals who want to look their best and stand out
+    in the crowd. Our French Crown Luxury fashion pieces are a perfect blend of style, quality, and
+    affordability. From exquisite formal wear to chic and trendy casual wear, to exclusive French
+    Crown Suits for men and women…. we have it all.
+    
+    <h2 style="font-weight: bold;margin-top: 15px;">A Shopping Experience Like No Other</h2>
+    At French Crown Clothing, we strive to make your shopping experience hassle-free and
+    enjoyable. We understand the importance of customer satisfaction and ensure that our products
+    are delivered in a timely and secure manner. Our online store is user-friendly and easy to
+    navigate, making it convenient for you to find what you need. We also have a team of dedicated
+    customer support representatives available to assist you with any queries you may have.
+    
+    <h2 style="font-weight: bold;margin-top: 15px;">Premium Men’s and Women’s Collections That Define Elegance</h2>
+    Our collections are designed to cater to every fashion need, from formal to casual wear. Our
+    designers are constantly creating new designs, patterns, and styles that are both unique and
+    elegant. Our mens and womens collections are curated to ensure that you are always in style,
+    no matter the occasion. From classic blazers to trendy jackets, and from <a href="https://frenchcrown.com/collections/women-dresses" target="_blank" style="text-decoration: underline;">women's sophisticated
+    dresses</a>, to elegant French Crown Suits to comfy tees, we have it all.
+    
+    <h2 style="font-weight: bold;margin-top: 15px;">Sale Collections - Steal Deals for Everyone</h2>
+    At French Crown Clothing, we value our customers and are always looking for ways to reward
+    them. Our <a href="https://frenchcrown.com/collections/sale" target="_blank" style="text-decoration: underline;">sale collections for mens</a> and women are the perfect opportunity to get your hands on
+    some of our premium products at a fraction of their regular price. Our mens and <a href="https://frenchcrown.com/collections/women-sale" target="_blank" style="text-decoration: underline;">womens sale
+    collections</a> offer a wide range of products even for our exclusives among the French Crown
+    Luxury collection so you don't have to break the bank to look your best.
+    
+    <h2 style="font-weight: bold;margin-top: 15px;">Expansion of New Collections - Always Fresh, Always New</h2>
+    We are constantly expanding our collections to ensure that you always have access to the latest
+    fashion trends. Our team of designers is always working to create new styles and patterns that
+    cater to the diverse fashion needs of our customers. <a href="https://frenchcrown.com/collections/new" target="_blank" style="text-decoration: underline;">French Crown new arrivals for men</a> are
+    updated regularly, so you can always find something new and exciting to add to your wardrobe.
+    There is also an expansion of <a href="https://frenchcrown.com/collections/women-new" target="_blank" style="text-decoration: underline;">new clothing collections for women</a> that brings fresh and in trend
+    styles and quality of clothes.
+    
+    <h2 style="font-weight: bold;margin-top: 15px;">French Crown's Global Store Philosophy - Fashion With a Purpose</h2>
+    At French Crown, we believe that fashion should not just be about looking good, but also about
+    feeling good. We are a fast fashion D2C brand that offers customized, plus size products, so
+    that everyone can have access to fashion that suits them. We have a strong supply chain with
+    zero deadstock, which ensures that our products are produced sustainably and efficiently. We
+    also offer festival sales on occasions like Christmas, Black Friday, Labor Day, and Cyber
+    Monday, so that our customers can enjoy fashion while also saving money.
+    
+    The French Crown brand was founded in 2016, and since then, our team of 500 members has
+    been working hard to create a brand that stands for quality, affordability, and sustainability. We
+    deliver our products to over 80 countries and have till date, launched 5000+ designs on our
+    website. Our products are delivered fast in the USA, Canada and in many more countries.
+    Join us in our mission to make fashion accessible to everyone, and experience the elegance
+    and style that only the French Crown can offer.
+  </div>
+{% endif %}
+<footer id="section-{{ section.id }}" class="Footer {% if section.blocks.size <= 2 %}Footer--center{% endif %} {% if add_top_margin %}Footer--withMargin{% endif %}" role="contentinfo">
+  <div class="Container">
+    {%- if section.blocks.size > 0 -%}
+      <div class="Footer__Inner">
+        {%- for block in section.blocks -%}
+          <div class="Footer__Block Footer__Block--{{ block.type }}" {{ block.shopify_attributes }}>
+            {%- case block.type -%}
+              {%- when 'text' -%}
+                {%- if block.settings.title != blank -%}
+                  <h5 class="Footer__Title Heading u-h6">{{ block.settings.title | escape }}</h5>
+                {%- endif -%}
+
+                {%- if block.settings.content != blank -%}
+                  <div class="Footer__Content Rte">
+                    {{ block.settings.content }}
+                  </div>
+                {%- endif -%}
+
+                {%- if block.settings.show_social_media -%}
+                  {% include 'social-media', class: 'Footer__Social', spacing: 'loose' %}
+                {%- endif -%}
+
+              {%- when 'links' -%}
+                {%- assign linklist = linklists[block.settings.menu] -%}
+
+                {%- if linklist != empty -%}
+                  <h5 class="Footer__Title Heading u-h6">{{ linklist.title | escape }}</h5>
+
+                  <ul class="Linklist">
+                    {%- for link in linklist.links -%}
+                      <li class="Linklist__Item">
+                        <a href="{{ link.url }}" target="_blank" class="Link Link--primary">{{ link.title | escape }}</a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+
+              {%- when 'newsletter' -%}
+                {%- if block.settings.title != blank -%}
+                  <h5 class="Footer__Title Heading u-h6">{{ block.settings.title | escape }}</h5>
+                {%- endif -%}
+
+                {%- if block.settings.content != blank -%}
+                  <div class="Footer__Content Rte">
+                    {{ block.settings.content }}
+                  </div>
+                {%- endif -%}
+
+                {%- form 'customer', id: 'footer-newsletter', class: 'Footer__Newsletter Form' -%}
+                  {%- if form.posted_successfully? -%}
+                    <p class="Form__Alert Alert Alert--success">{{ 'footer.newsletter.success' | t }}</p>
+                  {%- else -%}
+                    {%- if form.errors -%}
+                      <p class="Form__Alert Alert Alert--error">{{ form.errors.messages['email'] }}</p>
+                    {%- endif -%}
+
+                    <input type="hidden" name="contact[tags]" value="newsletter">
+                    <input type="email" name="contact[email]" id="email" class="Form__Input" aria-label="{{ 'footer.newsletter.input' | t }}" placeholder="{{ 'footer.newsletter.input' | t }}" required>
+<!--             		<input type="text" name="contact[phone]" id="mobile_no" class="Form__Input phone-no" aria-label="Enter your Phone no." placeholder="Enter your Phone no." required> -->
+            		<button type="submit" class="Form__Submit Button Button--primary">{{ 'footer.newsletter.submit' | t }}</button>
+                  {%- endif -%}
+                {%- endform -%}
+            {%- endcase -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="Footer__Aside">
+      <div class="Footer__Copyright">
+        <a target="_blank" href="{{ shop.url }}" class="Footer__StoreName Heading u-h7 Link Link--secondary">© {{'now' | date: '%Y' }}-{{ 'now' | date: '%y' | plus: 1 }} French Crown Store. All Rights Reserved.</a>
+
+        {%- capture powered_by_link -%}{{ powered_by_link }}{%- endcapture -%}
+      </div>
+
+      {%- if section.settings.show_payment_methods -%}
+        {%- capture payment_methods -%}
+          {%- for type in shop.enabled_payment_types -%}
+            <li class="HorizontalList__Item">{{ type | payment_type_svg_tag }}</li>
+          {%- endfor -%}
+        {%- endcapture -%}
+
+        {%- if payment_methods != blank -%}
+          <ul class="Footer__PaymentList HorizontalList">
+            {{ payment_methods }}
+          </ul>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </div>
+</footer>
+
+<script type="lazyload2">
+  $('#footer-newsletter').on('submit',function(e){
+//     var mobile = $('#mobile_no').val();
+    var email= $('#email').val();
+    if(mobile != '' && email != ''){
+      $.ajax({
+        type: "POST",
+        url: 'https://frenchcrownerp.com/miscellaneous/subscribe_list',
+        data: {
+//           mobile_no : mobile,
+          email: email,
+          shopify_domain: 'global-frenchcrown.myshopify.com'
+        },
+        success: function (data) {
+          console.log(data);
+          // location.reload(true);
+        },
+        error: function (textStatus, errorThrown) {
+          console.log(textStatus[msg],'status');
+          console.log(errorThrown,'error');
+        }  
+      });
+    }else{
+    	return true;
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Footer",
+  "class": "shopify-section--footer",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_payment_methods",
+      "label": "Show payment methods",
+      "info": "Payment method icons are automatically displayed based on your Shopify payment methods.",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Text / social media",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "About the shop"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Text",
+          "default": "<p>Use this text area to tell your customers about your brand and vision. You can change it in the theme settings.</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_social_media",
+          "label": "Show social media",
+          "info": "Make sure to have properly configured your social media in the theme settings.",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "links",
+      "name": "Links",
+      "settings": [
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "info": "This menu won't show dropdown items."
+        }
+      ]
+    },
+    {
+      "type": "newsletter",
+      "name": "Newsletter",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Customers who subscribe will have their email address added to the \"accepts marketing\" [customer list](/admin/customers?query=&accepts_marketing=1)."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Newsletter"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Text",
+          "default": "<p>A short sentence describing what someone will receive by subscribing</p>"
+        }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      {
+        "type": "text",
+        "settings": {}
+      },
+      {
+        "type": "links",
+        "settings": {
+          "menu": "footer"
+        }
+      },
+      {
+        "type": "newsletter",
+        "settings": {}
+      }
+    ]
+  }
+}
+{% endschema %}

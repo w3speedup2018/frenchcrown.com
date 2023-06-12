@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="{{ locale }}" dir="{{ direction }}" class="{{ checkout_html_classes }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, user-scalable=0">
+    <meta name="referrer" content="origin">
+
+    <title>{{ page_title }}</title>
+
+    {{ content_for_header }}
+  
+    {{ checkout_stylesheets }}
+    {{ 'mm-checkout-style.scss.css' | asset_url | stylesheet_tag }}
+    {{ checkout_scripts }}
+    {% render 'gtm-integration' %}
+    <script>
+      window.$ = Checkout.$;
+    </script>
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "ch86zid5hp");
+    </script>
+    <style>
+      .tax-duty-section{
+        background: black;
+        color: #fff;
+        font-size: 16px;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+        margin: 0 0 10px;
+        font-weight: 700;
+        line-height: 20px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    {{ skip_to_content_link }}
+    <header class="banner" data-header role="banner">
+      <div class="wrap">
+        {{ content_for_logo }}
+      </div>
+    </header>
+    
+    {{ order_summary_toggle }}
+    <div class="content" data-content>
+      <div class="wrap">
+        <div class="main">
+          <header class="main__header" role="banner">
+            <a class="logo logo--center" href="https://frenchcrown.com/">
+              <img alt="French Crown" class="logo__image logo__image--large" src="{{ 'fc_logo_black.svg' | asset_url }}" width="350">
+            </a>
+            {% if checkout.customer %}
+              {% assign customer_tags = checkout.customer.tags | downcase %}
+              {% if customer_tags contains 'old' %}
+                <p class="old-customer-msg">We are happy to have you back, {{ checkout.customer.first_name }} {{ checkout.customer.last_name }}!</p>
+              {% endif %}
+            {% endif %}
+            {{ breadcrumb }}
+            {{ alternative_payment_methods }}
+          </header>
+          <main class="main__content" role="main">
+            <div class="eu-tax-id-section">
+              <form id="EuTaxIdForm" enctype="multipart/form-data">
+                <h5>As per EU rules, courier company may ask for your TIN - Taxpayer Identification Number at the time of delivery. If you wish you can also add it here and we will provide it to your government on your behalf.</h5>
+                <input type="text" required class="eu_tin" placeholder="Type TIN here">
+                <button type="button">Submit</button>
+                <button class="ticket-id-submit" style="display: none">Submit</button>
+              </form>
+            </div>
+            
+            {{ content_for_layout }}
+            
+             <!--   pobox popup start  -->
+            <div class='fc_overlay'></div>
+            <div class='fc_popupBox'>
+
+<!--               <div class='fc_mainHead'>       
+                <div class='fc_popup-heading fc_center'>
+                  <img alt="French Crown" src="//cdn.shopify.com/s/files/1/0094/6326/7379/t/101/assets/fc_logo_white.svg?v=10546395492499813153">
+                </div>
+              </div> -->
+              
+              <div class="pobox-section">
+                <div class='fc_mainContent fc_center'>
+                  <h3>It looks like you have provided PO box address. For better deliveries, we advise you to provide proper physical address</h3>
+                </div>
+
+                <div class='fc_popup-footer'>
+                  <div class="fc_center">
+                    <button class='fc_back-btn close-btn'>CLOSE</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- pobox popup end  -->           
+          </main>
+
+          <footer class="main__footer" role="contentinfo">
+            {{ content_for_footer }}
+          </footer>
+        </div>
+        <aside class="sidebar" role="complementary">
+          <div class="sidebar__header">
+            {{ content_for_logo }}
+          </div>
+          <div class="sidebar__content">
+            {{ content_for_order_summary }}
+          </div>
+        </aside>
+      </div>
+    </div>
+      {% if settings.enable_prepaid_discount %}
+        {% render 'marmeto-discount-v2' %}
+      {% endif %}
+    
+    <script>
+      $(document).on('page:load', function() {
+        function fetch_reward_point_codes(cid){
+          $.ajax({
+            type: "GET",
+            url: 'https://frenchcrownerp.com/api/internal/v1/reward_point_codes',
+            data : {cid: cid, shopify_domain: 'global-frenchcrown.myshopify.com'},
+            success: function (data) {
+            $('.reward_point_code').remove();
+              var reward_point_codes = ''
+              if(data['point_balance'] > 0){
+                var cart_total = Shopify.Checkout.totalPrice;
+                if(data['point_balance'] > cart_total){
+                  point_balance = cart_total
+                }else{
+                  point_balance = data['point_balance']
+                }
+                reward_point_codes += '<div class="section__discount reward_point_code"><div class="section__discount-code"><div class="svg-wrapper"><svg xmlns="http://www.w3.org/2000/svg" width="13.68" height="12.224" viewBox="0 0 13.68 12.224"><defs><style>.a{fill:#717171;}.b{fill:#a8a8a8;}</style></defs><g transform="translate(0 -23.224)"><g transform="translate(0 23.224)"><g transform="translate(0 0)"><path class="a" d="M10.67,23.224H6.47a1,1,0,0,0-.709.294L.294,28.984a1,1,0,0,0,0,1.419l4.2,4.2a1,1,0,0,0,1.418,0l5.467-5.466a1.006,1.006,0,0,0,.294-.71v-4.2A1,1,0,0,0,10.67,23.224ZM8.915,26.735a.752.752,0,1,1,.752-.752A.753.753,0,0,1,8.915,26.735Z" transform="translate(0 -23.224)"></path></g></g><g transform="translate(6.865 24.227)"><g transform="translate(0 0)"><path class="b" d="M224.8,55.224v4.669a.871.871,0,0,1-.256.617l-5.555,5.555.085.085a1,1,0,0,0,1.418,0l5.017-5.016a1,1,0,0,0,.294-.709v-4.2A1,1,0,0,0,224.8,55.224Z" transform="translate(-218.988 -55.224)"></path></g></g></g></svg></div><div class="discount-code-wrapper"><div class="code-button"><p class="code-off">Cashback Balance - <span style="color: #197bbd;">Rs.'+data['point_balance']+'</span></p><a href="javascript:void(0);" style="display: none;">View Details</a></div><div class="apply-button" style="text-align: center;"><p data-points="'+point_balance+'" id="apply-cashback"><span>Apply Cashback</span></p></div></div></div></div>'
+              }
+              $.each( data['reward_point_codes'], function(i, value) {
+                if(value['discount_type'] == 'amount'){
+                  reward_point_codes += '<div class="section__discount reward_point_code"><div class="section__discount-code"><div class="svg-wrapper"><svg xmlns="http://www.w3.org/2000/svg" width="13.68" height="12.224" viewBox="0 0 13.68 12.224"><defs><style>.a{fill:#717171;}.b{fill:#a8a8a8;}</style></defs><g transform="translate(0 -23.224)"><g transform="translate(0 23.224)"><g transform="translate(0 0)"><path class="a" d="M10.67,23.224H6.47a1,1,0,0,0-.709.294L.294,28.984a1,1,0,0,0,0,1.419l4.2,4.2a1,1,0,0,0,1.418,0l5.467-5.466a1.006,1.006,0,0,0,.294-.71v-4.2A1,1,0,0,0,10.67,23.224ZM8.915,26.735a.752.752,0,1,1,.752-.752A.753.753,0,0,1,8.915,26.735Z" transform="translate(0 -23.224)"></path></g></g><g transform="translate(6.865 24.227)"><g transform="translate(0 0)"><path class="b" d="M224.8,55.224v4.669a.871.871,0,0,1-.256.617l-5.555,5.555.085.085a1,1,0,0,0,1.418,0l5.017-5.016a1,1,0,0,0,.294-.709v-4.2A1,1,0,0,0,224.8,55.224Z" transform="translate(-218.988 -55.224)"></path></g></g></g></svg></div><div class="discount-code-wrapper"><div class="code-button"><p class="code-off">'+value['discount_code']+' - Get <span style="color: #197bbd;">Rs.'+value['points']+'</span> off</p><a href="javascript:void(0);" style="display: none;">View Details</a></div><div class="apply-button '+value['discount_code'].toUpperCase()+'"><p id="apply-discount" data-discount-code="'+value['discount_code']+'"><span>Apply</span><span><svg xmlns="http://www.w3.org/2000/svg" width="19.13" height="13.018" viewBox="0 0 19.13 13.018"><defs><style>.tick-a{fill:#197bbd;}</style></defs><g transform="translate(-15.876 -21.316)"><g transform="translate(15.876 21.316)"><path class="tick-a" d="M141.879,165.829a1.49,1.49,0,0,0-2.107-.056l-9.516,9.025-4.539-4.66a1.491,1.491,0,0,0-2.136,2.08l5.565,5.714a1.491,1.491,0,0,0,2.094.042l10.583-10.037A1.49,1.49,0,0,0,141.879,165.829Z" transform="translate(-123.158 -165.364)"></path></g></g></svg></span></p></div></div></div></div>'
+                }
+              });
+              $('.discount-button-wrapper .discount-wrapper').prepend(reward_point_codes);
+              var appliedDiscount = $(".tags-list .tag").length;
+              if(appliedDiscount){
+                $('.tags-list .tag').each(function(){
+                  var discountCode = $(this).find(".reduction-code__text").text();
+                  $('.'+discountCode).addClass('applied-discount');
+                });
+                $('.discount-button-wrapper .section__discount').each(function(){
+                  var isDiscountApplied = $(this).find(".apply-button").hasClass('applied-discount');
+                  if(!isDiscountApplied){
+                    $(this).addClass('disabled-discount');
+                  }
+                });
+              }
+            }
+          });
+        }
+        if(Cookies.get('cid') != null){
+          fetch_reward_point_codes(Cookies.get('cid'));
+        }
+        {% if checkout.customer %}
+          Cookies.set('cid', "{{ checkout.customer.id }}", { expires: 1 });
+          fetch_reward_point_codes(Cookies.get('cid'));
+        {% endif %}
+        $(document).on('click', '#apply-cashback', function(){
+          $(this).attr('disabled', true).html('<img src="https://cdn.shopify.com/s/files/1/0094/6326/7379/files/black-loader.gif?v=1681550751" style="width: 25px">');
+          var shopify_domain = 'global-frenchcrown.myshopify.com';
+          var data = { "points": $(this).attr('data-points'), "shopify_domain": shopify_domain, "cid": Cookies.get('cid') }
+          $.ajax({
+            type: "POST",
+            url: 'https://frenchcrownerp.com/api/internal/v1/reward_point_codes',
+            data : data,
+            success: function (data) {
+              discount_code = data['code'];
+              $('[name="checkout[reduction_code]"]').val(discount_code);
+              $('.edit_checkout').addClass('discount-apply-form');
+              $('[name="checkout[reduction_code]"]').closest('form').submit();
+              setTimeout(function(){
+                location.reload();
+              }, 500);
+            },
+            error: function (data) {
+            }  
+          });  
+        });
+        function calculate_duty_tax(country, cart_total){
+          country_hash = {
+              'United States': {
+                "duty" : { "789" : 10.30 },
+                "tax" : { "100000" : 0 }
+              },
+              'United Kingdom': {
+                "duty" : { "0" : 12 },
+                "tax" : { "0" : 20 }
+              },
+              'Canada': {
+                "duty" : { "108" : 18 },
+                "tax" : { "15" : 13 }
+              },
+              'Australia': {
+                "duty" : { "643" : 5 },
+                "tax" : { "645" : 10 }
+              },
+              'Mexico': {
+                "duty" : { "49" : 20 },
+                "tax" : { "49" : 19 }
+              },
+              'Germany': {
+                "duty" : { "143" : 12 },
+                "tax" : { "0" : 19 }
+              },
+              'Saudi Arabia': {
+                "duty" : { "262" : 5 },
+                "tax" : { "262" : 15 }
+              },
+              'South Africa': {
+                "duty" : { "27" : 45 },
+                "tax" : { "27" : 15 }
+              },
+              'United Arab Emirates ': {
+                "duty" : { "80" : 5 },
+                "tax" : { "0" : 5 }
+              },
+              'France': {
+                "duty" : { "143" : 12 },
+                "tax" : { "0" : 20 }
+              },
+              'Sweden': {
+                "duty" : { "140" : 12 },
+                "tax" : { "0" : 25 }
+              },
+              'Belgium': {
+                "duty" : { "143" : 12 },
+                "tax" : { "0" : 21 }
+              },
+              'Italy': {
+                "duty" : { "143" : 12 },
+                "tax" : { "0" : 22 }
+              },
+              'Netherlands': {
+                "duty" : { "143" : 12 },
+                "tax" : { "0" : 21 }
+              },
+              'Singapore': {
+                "duty" : { "10000" : 0 },
+                "tax" : { "290" : 7 }
+              },
+              'New Zealand': {
+                "duty" : { "567" : 10 },
+                "tax" : { "640" : 15 }
+              },
+              'Ghana': {
+                "duty" : { "5" : 20 },
+                "tax" : { "5" : 15 }
+              },
+              'Switzerland': {
+                "duty" : { "0" : 2.50 },
+                "tax" : { "0" : 7.70 }
+              },
+              'Ireland': {
+                "duty" : { "143" : 12 },
+                "tax" : { "0" : 23 }
+              },
+              'Taiwan': {
+                "duty" : { "62" : 11 },
+                "tax" : { "65" : 5 }
+              },
+              'Norway': {
+                "duty" : { "0" : 11 },
+                "tax" : { "0" : 25 }
+              },
+              'Japan': {
+                "duty" : { "68" : 8.10 },
+                "tax" : { "74" : 10 }
+              },
+              'Malaysia': {
+                "duty" : { "4000000" : 0 },
+                "tax" : { "113" : 10 }
+              },
+              'Philippines': {
+                "duty" : { "168" : 15 },
+                "tax" : { "180" : 12 }
+              },
+              'Spain': {
+                "duty" : { "143" : 12 },
+                "tax" : { "0" : 21 }
+              },
+              'Denmark': {
+                "duty" : { "147" : 12 },
+                "tax" : { "0" : 25 }
+              },
+              'Kenya': {
+                "duty" : { "0" : 25 },
+                "tax" : { "0" : 14 }
+              },
+              'Iceland': {
+                "duty" : { "13" : 15 },
+                "tax" : { "14" : 24 }
+              },
+              'Kuwait': {
+                "duty" : { "0" : 5 },
+                "tax" : { "0" : 0 }
+              },
+              'Maldives': {
+                "duty" : { "0" : 15 },
+                "tax" : { "0" : 6 }
+              },
+              'Austria': {
+                "duty" : { "0" : 15 },
+                "tax" : { "0" : 6 }
+              },
+              'Hong Kong': {
+                "duty" : { "1200000" : 0 },
+                "tax" : { "0" : 0 }
+              },
+              'Sri Lanka': {
+                "duty" : { "0" : 15 },
+                "tax" : { "0" : 15 }
+              },
+              'Bahrain': {
+                "duty" : { "0" : 5 },
+                "tax" : { "0" : 5 }
+              },
+              'South Korea': {
+                "duty" : { "148" : 13 },
+                "tax" : { "150" : 10 }
+              },
+              'French Polynesia': {
+                "duty" : { "0" : 20 },
+                "tax" : { "0" : 20 }
+              },
+              'Luxembourg': {
+                "duty" : { "143" : 12 },
+                "tax" : { "0" : 17 }
+              },
+              'Malta': {
+                "duty" : { "143" : 12 },
+                "tax" : { "0" : 18 }
+              },
+              'Brunei': {
+                "duty" : { "0" : 0 },
+                "tax" : { "0" : 0 }
+              },
+              'Cyprus': {
+                "duty" : { "143" : 12 },
+                "tax" : { "0" : 19 }
+              },
+              'India': {
+                "duty" : { "0" : 0 },
+                "tax" : { "0" : 0 }
+              },
+              'Congo, The Democratic Republic Of The': {
+                "duty" : { "11" : 20 },
+                "tax" : { "11" : 16 }
+              },
+              'Greenland': {
+                "duty" : { "0" : 20 },
+                "tax" : { "0" : 20 }
+              },
+              'Guatemala': {
+                "duty" : { "0" : 15 },
+                "tax" : { "0" : 12 }
+              },
+              'Vietnam': {
+                "duty" : { "41" : 30 },
+                "tax" : { "41" : 10 }
+              },
+              'Jordan': {
+                "duty" : { "19" : 20 },
+                "tax" : { "19" : 16 }
+              },
+              'Oman': {
+                "duty" : { "0" : 5 },
+                "tax" : { "0" : 0 }
+              },
+              'French Guiana': {
+                "duty" : { "20" : 20 },
+                "tax" : { "21" : 20 }
+              },
+              'Greece': {
+                "duty" : { "143" : 12 },
+                "tax" : { "0" : 24 }
+              },
+              'Isle Of Man': {
+                "duty" : { "143" : 12 },
+                "tax" : { "18" : 20 }
+              },
+              'Indonesia': {
+                "duty" : { "2" : 45 },
+                "tax" : { "2" : 11 }
+              },
+              'Macao': {
+                "duty" : { "0" : 0 },
+                "tax" : { "0" : 0 }
+              },
+              'Mongolia': {
+                "duty" : { "0" : 20 },
+                "tax" : { "0" : 10 }
+              },
+              'Djibouti': {
+                "duty" : { "0" : 20 },
+                "tax" : { "0" : 33 }
+              },
+              'N/A': {
+                "duty" : { "0" : 0 },
+                "tax" : { "0" : 0 }
+              },
+              'North Macedonia': {
+                "duty" : { "20" : 20 },
+                "tax" : { "23" : 18 }
+              },
+              'Congo': {
+                "duty" : { "0" : 0 },
+                "tax" : { "0" : 0 }
+              },
+              "C0te D'ivoire": {
+                "duty" : { "19" : 20 },
+                "tax" : { "19" : 18 }
+              },
+              'Finland': {
+                "duty" : { "143" : 12 },
+                "tax" : { "0" : 24 }
+              },
+              'Fiji': {
+                "duty" : { "86" : 20 },
+                "tax" : { "90" : 15 }
+              },
+              'Thailand': {
+                "duty" : { "39" : 30 },
+                "tax" : { "42" : 7 }
+              },
+              'Poland': {
+                "duty" : { "143" : 12 },
+                "tax" : { "0" : 23 }
+              },
+              'Liechtenstein': {
+                "duty" : { "0" : 3 },
+                "tax" : { "0" : 7.70 }
+              },
+              'Guinea Bissau': {
+                "duty" : { "14" : 20 },
+                "tax" : { "14" : 25 }
+              },
+              'Egypt': {
+                "duty" : { "0" : 30 },
+                "tax" : { "0" : 14 }
+              },
+              'Jamaica': {
+                "duty" : { "19" : 20 },
+                "tax" : { "19" : 16.50 }
+              },
+              'Turkey': {
+                "duty" : { "20" : 12 },
+                "tax" : { "22" : 18 }
+              },
+              'Israel': {
+                "duty" : { "73" : 6 },
+                "tax" : { "73" : 17 }
+              },
+              'Martinique': {
+                "duty" : { "0" : 20 },
+                "tax" : { "0" : 8.50 }
+              },
+              'Barbados': {
+                "duty" : { "0" : 20 },
+                "tax" : { "0" : 17.50 }
+              },
+              'Peru': {
+                "duty" : { "197" : 11 },
+                "tax" : { "197" : 16 }
+              },
+              'Tanzania, United Republic Of': {
+                "duty" : { "0" : 25 },
+                "tax" : { "0" : 18 }
+              },
+              'Uganda': {
+                "duty" : { "49" : 25 },
+                "tax" : { "49" : 18 }
+              },
+              'S': {
+                "duty" : { "0" : 0 },
+                "tax" : { "0" : 0 }
+              },
+          }
+          if(country_hash[country] != null){
+            duty = country_hash[country]['duty'];
+            max_duty_amount = Object.keys(duty)[0];
+            max_duty_amount = parseFloat(max_duty_amount);
+            duty_percent = Object.values(duty)[0];
+            if(cart_total > max_duty_amount){
+              res_duty = (cart_total * duty_percent) / 100;
+            }else{
+              res_duty = 0;
+            }
+            tax = country_hash[country]['tax'];
+            max_tax_amount = Object.keys(tax)[0];
+            max_tax_amount = parseFloat(max_tax_amount);
+            tax_percent = Object.values(tax)[0];
+            if(cart_total > max_tax_amount){
+              res_tax = (cart_total * tax_percent) / 100;
+            }
+            else{
+              res_tax = 0;
+            }
+            res_duty = res_duty.toFixed(2)
+            res_tax = res_tax.toFixed(2)
+            duty_tax_total = (parseFloat(res_duty) + parseFloat(res_tax)).toFixed(2)
+            return [duty_percent, res_duty, tax_percent, res_tax, duty_tax_total]
+          }else{
+            return [0, 0, 0, 0, 0];
+          }
+    }
+        if(Shopify.Checkout.step == "contact_information"){
+          if($(".section--contact-information").length > 0){
+            let html = '';
+            html=`<div data-contact-field="phone" class="field contact_phone">
+                        <div class="field__input-wrapper field__input-wrapper--icon-right"><label class="field__label field__label--visible" for="checkout_contact_phone">Phone(Optional)</label>
+                          <input placeholder="Phone" autocomplete="Contact tel" autocorrect="off" data-backup="phone" data-phone-formatter="true" data-phone-formatter-country-select="[name='checkout[phone]']" class="field__input field__input--numeric" size="30" type="tel" name="checkout[phone]" id="checkout_contact_phone">
+                        </div>
+                  </div>`;
+            $(".section--contact-information .section__content .fieldset-description").after(html);
+          }
+        }
+
+        if(Shopify.Checkout.step == "payment_method" || Shopify.Checkout.step == "shipping_method"){
+          country = "{{ checkout.shipping_address.country }}";
+          cart_total = parseFloat("{{ checkout.total_price }}")/100;
+          duty_tax_res = calculate_duty_tax(country, cart_total);
+          if(duty_tax_res[4] > 0){
+            $('<div class="tax-duty-section"><p>As per '+country+' government duty rules, following tax and duty need to be paid by the customer at the time of delivery.</p><p>Tax '+duty_tax_res[0]+'% - $'+duty_tax_res[1]+'</p><p>Duty '+duty_tax_res[2]+'% - $'+duty_tax_res[3]+'</p><p>Total - $'+duty_tax_res[4]+'</p></div>').insertBefore('.section--payment-method .section__content, .section--shipping-method .section__content');  
+          }
+        }
+        
+     //    if($(".thank-you__additional-content").length > 0 || Shopify.Checkout.step == "thank_you"){
+          
+     //      let flickityCSS = document.createElement("link");
+     //      flickityCSS.rel = "stylesheet";
+     //      flickityCSS.type = "text/css";
+     //      flickityCSS.href = "https://cdnjs.cloudflare.com/ajax/libs/flickity/1.1.0/flickity.min.css";
+     //      flickityCSS.media = 'all';
+     //      $("head").append(flickityCSS);
+          
+     //      let jqueryHeight = document.createElement("script");
+     //      jqueryHeight.type = "text/javascript";
+     //      jqueryHeight.src = "https://cdn.shopify.com/s/files/1/0094/6326/7379/t/112/assets/jquery-equal-height.min.js";
+     //      $("head").append(jqueryHeight);
+          
+     //      let flickityJS = document.createElement("script");
+     //      flickityJS.type = "text/javascript";
+     //      flickityJS.src = "https://cdnjs.cloudflare.com/ajax/libs/flickity/1.1.0/flickity.pkgd.min.js";
+     //      $("head").append(flickityJS);
+          
+     //      let html = '';
+          
+     //      $.ajax({
+     //        url: "/collections/suits/products.json",
+     //        method: "GET",
+     //        dataType: "json",
+     //        success: function (data) {
+              
+              
+     //          let jsonData = data.products;
+              
+     //            html += `<div class="product__listing__slider">
+          //    <h2 class="slider-heading">We Recommend</h2>
+     //                      <div data-list-selectcallback class="custom-selectcallback ProductList ProductList--carousel Carousel" tabindex="0">`;
+              
+     //           jsonData.forEach((item, index) => {
+                  
+     //              let pro_price = (item.variants[0].price).replace(".00",'')
+     //            html +=  `<div class="Carousel__Cell jQueryEqualHeight">
+     //                           <div class="ProductItem">
+     //                                <div class="ProductItem__Wrapper">
+          //          <a href="/collections/shirts/products/${item.handle}" target="_blank" class="ProductItem__ImageWrapper ">
+     //                                      <div class="ProdctImage-wrap">
+     //                                        <img class="ProductItem__Image Image--fadeIn" src="${item.images[0].src}" alt="${item.title}">
+     //                                      </div>
+     //                                    </a>
+     //                                    <div class="ProductItem__Info ProductItem__Info--left">
+     //                                      <h2 class="ProductItem__Title Heading">
+          //            <a target="_blank" href="/collections/shirts/products/${item.handle}" >${item.title}</a>
+     //                                      </h2>
+          //            <span class="ProductItem__Price Price Text--subdued money" >$ ${pro_price} USD</span>
+     //                                    </div>
+     //                                  </div>
+     //                            </div>
+     //                        </div>`
+     //                  if(index == 20){
+     //                   return false;
+     //                  }
+          // });
+              
+     //             html +=  `</div>
+     //                    </div>`;
+                
+     //          $(".thank-you__additional-content").append(html);
+              
+     //          setTimeout(function(){
+
+     //            $('.jQueryEqualHeight').jQueryEqualHeight('.ProductItem');
+     //            $('.jQueryEqualHeight').jQueryEqualHeight();
+
+     //            $('.product__listing__slider [data-list-selectcallback]').flickity({
+     //              prevNextButtons: true,
+     //              pageDots: false,
+     //              wrapAround: true,
+     //              contain: true,
+     //              cellAlign: 'left',
+     //              dragThreshold: 8,
+     //              groupCells: true,
+     //              adaptiveHeight: true,
+     //              lazyLoad: 2,
+     //              arrowShape: { x0: 10,x1: 60, y1: 50,x2: 70, y2: 40,x3: 30}
+     //            });
+     //            $('.product__listing__slider').css({
+     //              'visibility': 'visible',
+     //              'opacity': '1'
+     //            });
+
+     //          },1000);
+              
+     //        },
+     //      });
+          
+     //      /* tax id upload for EU countries */
+          
+     //      var eu_countries = ["Austria", "Belgium", "Bulgaria", "Croatia", "Republic of Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", "Spain", "Sweden"];
+     //      if($.inArray(Shopify.checkout.shipping_address.country, eu_countries) != -1) {
+     //        $('.thank-you__additional-content').prepend($('.eu-tax-id-section'));
+     //        $('.eu-tax-id-section').show();
+     //        $('#EuTaxIdForm button:first').on('click', function(){
+     //          if ($("#EuTaxIdForm")[0].checkValidity()) {
+     //              $.ajax({
+     //                type: "POST",
+     //                url: 'https://frenchcrownerp.com/miscellaneous/add_eu_tin',
+     //                data : {order_id: Shopify.checkout.order_id, eu_tin: $('.eu_tin').val()},
+     //                success: function (data) {
+     //                  alert('TIN is submitted successfully..!' );
+     //                },
+     //                error: function (textStatus, errorThrown) {
+     //                }  
+     //              });
+     //          }else{
+     //           $('.ticket-id-submit').click();
+     //          }
+     //        });
+     //      }
+          
+     //    }
+        
+        if(Shopify.Checkout.step == 'contact_information'){
+          
+          if($("#checkout_contact_phone").length > 0){
+            $("#checkout_contact_phone").on('change',function(){
+              $('.reward_point_code').remove();
+              var $this = $(this);
+              var mobNum = $(this).val();
+              var filter = /^\d*(?:\.\d{0,1,2})?$/;
+
+              if (filter.test(mobNum)) {
+                if(mobNum.length==10){
+                  $this.removeClass("phone_error");
+                  $("#checkout_shipping_address_phone").val(mobNum);
+                  
+                  let commonAPI = `https://frenchcrownerp.com/miscellaneous/customer_by_phone?phone=${mobNum}&shopify_domain=global-frenchcrown.myshopify.com`;
+                  var settings = {
+                    "url": commonAPI,
+                    "method": "GET",
+                    "timeout": 0,
+                  };
+
+                  $.ajax(settings).done(function (response) {
+                    if(response.customer){
+                      let customer_details = response.customer;
+                      Cookies.set('cid', customer_details.id, { expires: 1 });
+                      fetch_reward_point_codes(customer_details.id);
+                      if(customer_details.addresses.length > 0){
+                        let _default_address = customer_details.default_address;
+  
+                        let country = $("#checkout_shipping_address_country");
+                        let first_name = $("#checkout_shipping_address_first_name");
+                        let last_name = $("#checkout_shipping_address_last_name");
+                        let address1 = $("#checkout_shipping_address_address1");
+                        let address2 = $("#checkout_shipping_address_address2");
+                        let city = $("#checkout_shipping_address_city");
+                        let province = $("#checkout_shipping_address_province");
+                        let zip = $("#checkout_shipping_address_zip");
+                        let phone_number = $("#checkout_shipping_address_phone");
+  
+                        if(_default_address.country){
+                          country.find("option").filter(function() {
+                            //may want to use $.trim in here
+                            return $(this).text() == _default_address.country;
+                          }).prop('selected', true);
+                          country.trigger("change");
+                        }
+                        
+                        if(first_name.val() == "" || first_name.val() == null){
+                          if(_default_address.first_name){
+                            first_name.val(_default_address.first_name);
+                          }
+                        }
+                        if(last_name.val() == "" || last_name.val() == null){
+                          if(_default_address.last_name){
+                            last_name.val(_default_address.last_name);
+                          }
+                        }
+                        if(address1.val() == "" || address1.val() == null){
+                          if(_default_address.address1){
+                            address1.val(_default_address.address1);
+                          }
+                        }
+                        if(address2.val() == "" || address2.val() == null ){
+                          if(_default_address.address2){
+                            address2.val(_default_address.address2);
+                          }
+                        }
+                        if(city.val() == "" || city.val() == null){
+                          if(_default_address.city){
+                            city.val(_default_address.city);
+                          }
+                        }
+                        if(province.val() == "" || province.val() == null){
+                          if(_default_address.province){
+                             province.find("option").filter(function() {
+                              //may want to use $.trim in here
+                              return $(this).text() == _default_address.province;
+                            }).prop('selected', true);
+                          }
+                        }
+                        if(zip.val() == "" || zip.val() == null){
+                          if(_default_address.zip){
+                            zip.val(_default_address.zip);
+                          }
+                        }
+                        if(phone_number.val() == "" || phone_number.val() == null){
+                          if(_default_address.phone){
+                            phone_number.val(_default_address.phone);
+                          }
+                        }
+  
+                      }
+                    }
+                  });
+                  
+                  
+                } else {
+                  $this.addClass("phone_error");
+                  return false;
+                }
+              }
+              else {
+                $this.addClass("phone_error");
+                return false;
+              }
+            });
+          }
+          
+          let emailField = document.querySelector("#checkout_email");
+          if(emailField){
+            emailField.addEventListener("change",(event) => {
+              $('.reward_point_code').remove();
+              let emailValue = event.target.value.toLowerCase().trim();
+              const validateEmail = _validateEmail(emailValue);
+
+              if(validateEmail != null){
+
+                let commonAPI = `https://frenchcrownerp.com/miscellaneous/customer_by_email?email=${emailValue}&shopify_domain=global-frenchcrown.myshopify.com`;
+                var settings = {
+                  "url": commonAPI,
+                  "method": "GET",
+                  "timeout": 0,
+                };
+                
+                $.ajax(settings).done(function (response) {
+                  if(response.customer){
+                    let customer_details = response.customer;
+                    Cookies.set('cid', customer_details.id, { expires: 1 });
+                    fetch_reward_point_codes(customer_details.id);
+                    if(customer_details.addresses.length > 0){
+                      let _default_address = customer_details.default_address;
+
+                      let country = $("#checkout_shipping_address_country");
+                      let first_name = $("#checkout_shipping_address_first_name");
+                      let last_name = $("#checkout_shipping_address_last_name");
+                      let address1 = $("#checkout_shipping_address_address1");
+                      let address2 = $("#checkout_shipping_address_address2");
+                      let city = $("#checkout_shipping_address_city");
+                      let province = $("#checkout_shipping_address_province");
+                      let zip = $("#checkout_shipping_address_zip");
+                      let phone_number = $("#checkout_shipping_address_phone");
+
+                      if(_default_address.country){
+                        country.find("option").filter(function() {
+                          //may want to use $.trim in here
+                          return $(this).text() == _default_address.country;
+                        }).prop('selected', true);
+                        country.trigger("change");
+                      }
+                      
+                      if(first_name.val() == "" || first_name.val() == null){
+                        if(_default_address.first_name){
+                          first_name.val(_default_address.first_name);
+                        }
+                      }
+                      if(last_name.val() == "" || last_name.val() == null){
+                        if(_default_address.last_name){
+                          last_name.val(_default_address.last_name);
+                        }
+                      }
+                      if(address1.val() == "" || address1.val() == null){
+                        if(_default_address.address1){
+                          address1.val(_default_address.address1);
+                        }
+                      }
+                      if(address2.val() == "" || address2.val() == null ){
+                        if(_default_address.address2){
+                          address2.val(_default_address.address2);
+                        }
+                      }
+                      if(city.val() == "" || city.val() == null){
+                        if(_default_address.city){
+                          city.val(_default_address.city);
+                        }
+                      }
+                      if(province.val() == "" || province.val() == null){
+                        if(_default_address.province){
+                           province.find("option").filter(function() {
+                            //may want to use $.trim in here
+                            return $(this).text() == _default_address.province;
+                          }).prop('selected', true);
+                        }
+                      }
+                      if(zip.val() == "" || zip.val() == null){
+                        if(_default_address.zip){
+                          zip.val(_default_address.zip);
+                        }
+                      }
+                      if(phone_number.val() == "" || phone_number.val() == null){
+                        if(_default_address.phone){
+                          phone_number.val(_default_address.phone);
+                        }
+                      }
+
+                    }
+                  }
+                });
+                
+              }
+              
+            });
+            if(emailField.value != ""){
+              setTimeout(function(){
+                const event = new Event('change');  
+                emailField.dispatchEvent(event);
+              },3000);
+            }
+          }
+          
+        }
+        
+        
+        function _validateEmail(email){
+          return email.match(
+            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          );
+        }
+        
+        
+      })
+      
+    </script>
+    
+    {{ tracking_code }}    
+  </body>
+</html>
